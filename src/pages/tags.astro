@@ -1,0 +1,42 @@
+---
+import { Tag } from '@components/Tag';
+import { Layout } from '@layouts/Layout';
+import { Breadcrumb } from '@components/Breadcrumb';
+
+const allPosts = await Astro.glob('../posts/**/*.{md,mdx}');
+const tags = [
+  ...new Set(
+    [].concat.apply(
+      [],
+      allPosts.map((post) => post.frontmatter.tags)
+    )
+  ),
+];
+
+const breadcrumbNav = [
+  {
+    name: 'homepage',
+    url: `${Astro.site}`,
+  },
+  {
+    name: 'tags',
+    url: `${Astro.site}tags`,
+  },
+];
+---
+
+<Layout page="Tags">
+  <section>
+    <Breadcrumb pages={breadcrumbNav} />
+
+    <ul class="flex flex-wrap gap-3">
+      {
+        tags.map((tag: string) => (
+          <li>
+            <Tag tag={tag} />
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</Layout>

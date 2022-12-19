@@ -1,0 +1,35 @@
+---
+import { Layout } from '@layouts/Layout';
+import { Picture } from '@astrojs/image/components';
+import { SubscribeForm } from '@components/SubscribeForm';
+import { SITE } from '@config';
+
+const { frontmatter } = Astro.props;
+---
+
+<Layout title={frontmatter.title} page={frontmatter.title}>
+  <article>
+    <h1>{frontmatter.title}</h1>
+
+    {
+      frontmatter.image != '' && (
+        <Picture
+          src={import(`../../assets/images/pages/${frontmatter.image}.jpg`)}
+          alt={frontmatter.alt ?? ''}
+          format="webp"
+          loading="eager"
+          widths={[320, 412]}
+          sizes="(min-width: 1024px) 412px, 320px"
+          aspectRatio={1 / 1}
+          width={412}
+          height={412}
+        />
+      )
+    }
+
+    <div class="prose">
+      <slot />
+    </div>
+    {frontmatter.newsletter && <SubscribeForm />}
+  </article>
+</Layout>

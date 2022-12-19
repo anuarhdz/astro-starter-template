@@ -1,0 +1,40 @@
+---
+import { Time } from '@components/Time';
+import { Tag } from '@components/Tag';
+import getSlug from '@utils/getSlug';
+export interface Props {
+  post: {
+    title: string;
+    datetime: string;
+    description: string;
+    readTime: string;
+    tags: string[];
+  };
+}
+
+const { post } = Astro.props;
+---
+
+<h3 class="font-bold underline">
+  <a href={new URL(getSlug(post.title, 'blog/'), Astro.site)}>{post.title}</a>
+</h3>
+<p>
+  <Time postDate={post.datetime} isBlogpostUpdate={false} />
+</p>
+<p>
+  <span aria-hidden="true">⏰</span>
+  <span class="sr-only">tiempo de lectura:</span>
+  {post.readTime}
+</p>
+<p>
+  {post.description}
+</p>
+<ul class="flex flex-wrap gap-3">
+  {
+    post.tags.map((tag: string) => (
+      <li>
+        <Tag tag={tag} />
+      </li>
+    ))
+  }
+</ul>

@@ -1,0 +1,58 @@
+---
+import { Layout } from '@layouts/Layout';
+import { Time } from '@components/Time';
+import { Tag } from '@components/Tag';
+import getSlug from '@utils/getSlug';
+import { PostMeta } from '@components/PostMeta';
+
+export async function getStaticPaths({}) {
+  const snippets = await Astro.glob('../../snippets/**/*.{md,mdx}');
+  const publishedSnippets = snippets.filter(
+    ({ frontmatter }) => !frontmatter.draft
+  );
+
+  return publishedSnippets.map((snippet) => {
+    return {
+      params: { slug: getSlug(snippet.frontmatter.title) },
+      props: { snippet },
+    };
+  });
+}
+
+const { Content, frontmatter } = Astro.props.snippet;
+const snippet = frontmatter;
+---
+
+<Layout page={snippet.title}>
+  <article>
+    <h1>{snippet.title}</h1>
+    {
+      snippet.updateDate ? (
+        <>
+          <PostMeta
+            avatar="avatar"
+            date={snippet.datetime}
+            updateDateExist={true}
+            updateDate={snippet.updateDate}
+            defaultAuthor={true}
+            readTime={snippet.readTime}
+          />
+        </>
+      ) : (
+        <>
+          <PostMeta
+            avatar="avatar"
+            date={snippet.datetime}
+            updateDateExist={false}
+            defaultAuthor={true}
+            readTime={snippet.readTime}
+          />
+        </>
+      )
+    }
+
+    <div class="prose max-w-none">
+      <Content />
+    </div>
+  </article>
+</Layout>

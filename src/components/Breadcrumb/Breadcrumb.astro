@@ -1,0 +1,42 @@
+---
+export interface Props {
+  pages: Pages[];
+}
+
+export interface Pages {
+  name: string;
+  url: string;
+}
+
+const { pages } = Astro.props;
+---
+
+<nav aria-label="Breadcrumbs">
+  <ol role="list" class="flex gap-3">
+    {
+      pages.map((page) => (
+        <li>
+          {page.url === 'current' ? (
+            <span aria-current="page">{page.name}</span>
+          ) : (
+            <a href={page.url}>{page.name}</a>
+          )}
+        </li>
+      ))
+    }
+  </ol>
+</nav>
+
+<style>
+  li {
+    display: block;
+  }
+  ol li + li::before {
+    display: inline-block;
+    margin: 0 0.25em;
+    transform: rotate(15deg);
+    border-right: 0.1em solid currentcolor;
+    height: 0.8em;
+    content: '';
+  }
+</style>

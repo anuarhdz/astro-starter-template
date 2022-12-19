@@ -1,0 +1,79 @@
+---
+import { Tag } from '@components/Tag';
+import { Layout } from '@layouts/Layout';
+import { Card } from '@components/Card';
+import { Breadcrumb } from '@components/Breadcrumb';
+import getSlug from '@utils/getSlug';
+import { slufigyAll } from '@utils/slugify';
+
+export async function getStaticPaths({}) {
+  const posts = await Astro.glob('../../posts/**/*.{md,mdx}');
+  const publishedPosts = posts.filter(({ frontmatter }) => !frontmatter.draft);
+  const allTags = new Set();
+
+  publishedPosts.map((post) => {
+    post.frontmatter.tags &&
+      post.frontmatter.tags.map((tag: string) =>
+        allTags.add(tag.toLowerCase())
+      );
+  });
+
+  return Array.from(allTags).map((tag) => {
+    const filteredPosts = publishedPosts.filter((post) =>
+      post.frontmatter.tags.includes(tag)
+    );
+    return {
+      params: { tag },
+      props: {
+        posts: filteredPosts,
+      },
+    };
+  });
+}
+
+const { tag } = Astro.params;
+const currentTag = tag as string;
+
+const posts = await Astro.glob('../../posts/**/*.{md,mdx}');
+const publishedPosts = posts.filter(({ frontmatter }) => !frontmatter.draft);
+const taggedPosts = publishedPosts.filter((post) =>
+  slufigyAll(post.frontmatter.tags).includes(currentTag)
+);
+const orderedTaggedPosts = taggedPosts.sort(
+  (a, b) =>
+    new Date(b.frontmatter.datetime).valueOf() -
+    new Date(a.frontmatter.datetime).valueOf()
+);
+
+const breadcrumbNav = [
+  {
+    name: 'homepage',
+    url: `${Astro.site}`,
+  },
+  {
+    name: 'tags',
+    url: `${Astro.site}tags`,
+  },
+  {
+    name: currentTag,
+    url: 'current',
+  },
+];
+---
+
+<Layout page="Tag: {tag}">
+  <section>
+    <h1>Tag: {tag}</h1>
+
+    <Breadcrumb pages={breadcrumbNav} />
+    <ul>
+      {
+        orderedTaggedPosts.map(({ frontmatter }) => (
+          <li>
+            <Card post={frontmatter} />
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</Layout>

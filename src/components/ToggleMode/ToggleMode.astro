@@ -1,0 +1,65 @@
+---
+---
+
+<button id="toggle-mode" data-mode="light" type="button" aria-pressed="false">
+  Alternar modo oscuro
+</button>
+
+<script>
+  type toggleMode = HTMLButtonElement;
+  type onClick = (event: MouseEvent) => void;
+  const storageKey = 'theme-preference';
+  const onClick = (event: any) => {
+    theme.value = theme.value === 'light' ? 'dark' : 'light';
+    event.target.setAttribute(
+      'aria-pressed',
+      theme.value === 'light' ? 'false' : 'true'
+    );
+    setPreference();
+    // if (event.target.getAttribute('aria-pressed') === 'false') {
+    //   event.target.setAttribute('aria-pressed', 'true');
+    // } else {
+    //   event.target.setAttribute('aria-pressed', 'false');
+    // }
+  };
+
+  const getPreferenceMode = () => {
+    if (localStorage.getItem(storageKey))
+      return localStorage.getItem(storageKey);
+    else
+      return window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light';
+  };
+
+  const setPreference = () => {
+    localStorage.setItem(storageKey, theme.value);
+    reflectPreference();
+  };
+
+  const reflectPreference = () => {
+    document.documentElement.setAttribute('data-mode', theme.value);
+    document
+      .querySelector('#toggle-mode')
+      ?.setAttribute('data-mode', theme.value);
+  };
+
+  const theme = {
+    value: getPreferenceMode() as string,
+  };
+
+  reflectPreference();
+
+  window.onload = () => {
+    reflectPreference();
+    const toggleMode = document.querySelector('#toggle-mode')!;
+    toggleMode.addEventListener('click', onClick);
+  };
+
+  window
+    .matchMedia('(prefers-color-scheme: dark)')
+    .addEventListener('change', ({ matches: isDark }) => {
+      theme.value = isDark ? 'dark' : 'light';
+      setPreference();
+    });
+</script>

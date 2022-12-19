@@ -1,0 +1,125 @@
+---
+import { SITE } from '@config';
+import { Header } from '@components/Header';
+import { Footer } from '@components/Footer';
+import { SkipLink } from '@components/SkipLink';
+import { Schema } from 'astro-seo-schema';
+import '@styles/base.css';
+import { getISODate } from '@utils/dateUtils';
+
+const isProd = import.meta.env.PROD;
+
+//console.log(isProd);
+
+export interface Props {
+  title?: string;
+  desc?: string;
+  image?: string;
+  alt?: string;
+  page?: string;
+  pageType?: string;
+  postdate?: string;
+}
+
+const {
+  title,
+  page,
+  pageType,
+  postdate,
+  desc = SITE.desc,
+  image = SITE.ogImage,
+  alt = SITE.ogImageAlt,
+} = Astro.props;
+
+const siteTitle =
+  Astro.url.pathname === '/'
+    ? [SITE.author, SITE.desc].join(' — ')
+    : [page, SITE.author].join(' — ');
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const URLString = canonicalURL as unknown as string;
+const imageString = new URL(image, Astro.site) as unknown as string;
+const postDateSchema = postdate
+  ? (getISODate(postdate) as string)
+  : (null as unknown as string);
+
+console.log(pageType, page);
+---
+
+<!DOCTYPE html>
+<html lang="es" prefix="og: https://ogp.me/ns#">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>
+      {siteTitle}
+    </title>
+    <meta name="title" content={title} />
+    <meta name="description" content={desc} />
+    <meta name="author" content={SITE.author} />
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={desc} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:image" content={new URL(image, Astro.url)} />
+    <meta property="og:image:alt" content={alt} />
+    <meta property="og:type" content="website" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={canonicalURL} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={desc} />
+    <meta property="twitter:image" content={new URL(image, Astro.url)} />
+    <meta name="twitter:image:alt" content={alt} />
+    {
+      pageType === 'home' && (
+        <Schema
+          item={{
+            '@context': 'https://schema.org',
+            '@type': 'Person',
+            name: SITE.author,
+            url: 'https://anuar.mx',
+            image: 'https://anuar.mx/img/avatar.jpg',
+            sameAs: ['https://anuar.mx', 'https://github.com/anuarhdz'],
+            jobTitle: 'Full-Stack Developer',
+          }}
+        />
+      )
+    }
+    {
+      pageType === 'blogpost' && (
+        <Schema
+          item={{
+            '@context': 'https://schema.org',
+            '@type': 'BlogPosting',
+            mainEntityOfPage: {
+              '@type': 'WebPage',
+              '@id': URLString,
+            },
+            headline: page,
+            description: desc,
+            image: imageString,
+            author: {
+              '@type': 'Person',
+              name: SITE.author,
+            },
+            datePublished: postDateSchema,
+          }}
+        />
+      )
+    }
+  </head>
+  <body>
+    <SkipLink />
+    <Header />
+    <main id="main-content" tabindex="-1">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

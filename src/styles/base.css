@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    display: grid;
+    height: 100vh;
+    height: 100dvh;
+    @apply antialiased scroll-smooth;
+  }
+
+  nav > ul > li {
+    @apply inline-block;
+  }
+
+  main:focus {
+    outline: none;
+  }
+
+  body {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    grid-template-columns: 1fr;
+  }
+}

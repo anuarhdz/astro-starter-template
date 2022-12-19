@@ -1,0 +1,62 @@
+---
+---
+
+<accordion-component>
+  <slot name="control" />
+  <slot name="panel" />
+</accordion-component>
+
+<script>
+  interface AccordionComponent {
+    accordionControl: HTMLButtonElement;
+    accordionPanel: HTMLElement;
+    onClickHandle: (event: MouseEvent) => void;
+  }
+
+  class AccordionComponent extends HTMLElement {
+    constructor() {
+      super();
+    }
+
+    static get observedAttributes() {
+      return ['open'];
+    }
+
+    connectedCallback() {
+      this.accordionControl = this.querySelector('button') as HTMLButtonElement;
+      this.accordionPanel = this.lastElementChild as HTMLElement;
+      this.onClickHandle = this.onClick.bind(this);
+
+      this.accordionControl.addEventListener('click', this.onClickHandle);
+    }
+
+    attributeChangedCallback(name: string, old: string, now: string) {
+      console.log(`El atributo ${name} ha sido modificado de ${old} a ${now}.`);
+    }
+
+    onClick(event: MouseEvent) {
+      console.log(event);
+      this.toggleAttribute('open');
+      const isOpen = this.checkOpen();
+      if (isOpen) {
+        this.accordionControl.setAttribute('aria-expanded', 'true');
+        this.accordionPanel.setAttribute('data-state', 'open');
+      } else {
+        this.accordionControl.setAttribute('aria-expanded', 'false');
+        this.accordionPanel.setAttribute('data-state', 'close');
+      }
+    }
+
+    checkOpen() {
+      return this.hasAttribute('open');
+    }
+
+    // get currentButtonState() {
+    //   return this.accordionControl.getAttribute('aria-expanded')!;
+    // }
+  }
+
+  if (!customElements.get('accordion-component')) {
+    customElements.define('accordion-component', AccordionComponent);
+  }
+</script>

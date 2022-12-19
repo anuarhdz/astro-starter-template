@@ -1,0 +1,132 @@
+---
+import { Layout } from '@layouts/Layout';
+import { Time } from '@components/Time';
+import { Tag } from '@components/Tag';
+import { Image } from '@astrojs/image/components';
+import { PostMeta } from '@components/PostMeta';
+import { Accordion, Control, Panel } from '@components/Accordion';
+import getRandomId from '@utils/getRandomId';
+import { SITE } from '@config';
+const currentId = getRandomId();
+
+import { TOC } from 'astro-accessible-patterns';
+import getSlug from '@utils/getSlug';
+
+export async function getStaticPaths({}) {
+  const posts = await Astro.glob('../../posts/**/*.{md,mdx}');
+  const publishedPosts = posts.filter(({ frontmatter }) => !frontmatter.draft);
+  return publishedPosts.map((post) => {
+    return {
+      params: { slug: getSlug(post.frontmatter.title) },
+      props: { post },
+    };
+  });
+}
+
+const { slug } = Astro.params;
+const { Content, frontmatter, getHeadings } = Astro.props.post;
+
+const post = frontmatter;
+const useTOC = getHeadings().length === 0 || post.toc === false ? false : true;
+const accordionControlId = `accordion-button-${currentId}`;
+const accordionPanelId = `accordion-panel-${currentId}`;
+---
+
+<Layout
+  page={post.title}
+  desc={post.description}
+  postdate={post.datetime}
+  pageType="blogpost"
+>
+  <article>
+    <h1>{post.title}</h1>
+
+    {
+      post.updateDate ? (
+        <>
+          <PostMeta
+            avatar="avatar"
+            date={post.datetime}
+            updateDateExist={true}
+            updateDate={post.updateDate}
+            defaultAuthor={true}
+            readTime={post.readTime}
+          />
+        </>
+      ) : (
+        <>
+          <PostMeta
+            avatar="avatar"
+            date={post.datetime}
+            updateDateExist={false}
+            defaultAuthor={true}
+            readTime={post.readTime}
+          />
+        </>
+      )
+    }
+
+    {
+      post.cover &&
+        (post.ext === 'png' ? (
+          <Image
+            src={import(`../../assets/images/blog/post-${post.cover}.png`)}
+            alt={frontmatter.alt ? frontmatter.alt : ''}
+            format="webp"
+            width={650}
+            aspectRatio={4 / 3}
+            loading="eager"
+            class="object-cover"
+          />
+        ) : (
+          <Image
+            src={import(`../../assets/images/blog/post-${post.cover}.jpg`)}
+            alt={frontmatter.alt ? frontmatter.alt : ''}
+            format="webp"
+            width={650}
+            aspectRatio={4 / 3}
+            loading="eager"
+            class="object-cover"
+          />
+        ))
+    }
+
+    {
+      useTOC && (
+        <>
+          <Accordion>
+            <Control
+              id={accordionControlId}
+              panelId={accordionPanelId}
+              slot="control"
+            >
+              Tabla de contenidos
+            </Control>
+            <Panel
+              id={accordionPanelId}
+              controlId={accordionControlId}
+              slot="panel"
+            >
+              <nav>
+                <TOC toc={getHeadings()} />
+              </nav>
+            </Panel>
+          </Accordion>
+        </>
+      )
+    }
+    <div class="prose max-w-none">
+      <Content />
+    </div>
+    <hr />
+    <ul>
+      {
+        post.tags.map((tag: string) => (
+          <li>
+            <Tag tag={tag} />
+          </li>
+        ))
+      }
+    </ul>
+  </article>
+</Layout>

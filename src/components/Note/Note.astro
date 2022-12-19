@@ -1,0 +1,21 @@
+---
+import { Time } from '@components/Time';
+export interface Props {
+  post: {
+    title: string;
+    datetime: string;
+  };
+  Content: any;
+}
+
+const { post, Content } = Astro.props;
+---
+
+<article>
+  <h2 class="font-bold">{post.title}</h2>
+  <Time postDate={post.datetime} />
+
+  <div class="prose">
+    <Content />
+  </div>
+</article>

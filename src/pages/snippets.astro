@@ -1,0 +1,32 @@
+---
+import { Layout } from '@layouts/Layout';
+import { SnippetCard } from '@components/SnippetCard';
+
+const snippets = (await Astro.glob('../snippets/**/*.{md,mdx}')).sort(
+  (a, b) =>
+    new Date(b.frontmatter.datetime).valueOf() -
+    new Date(a.frontmatter.datetime).valueOf()
+);
+const publishedSnippets = snippets.filter(
+  ({ frontmatter }) => !frontmatter.draft
+);
+---
+
+<Layout page="Snippets">
+  <section>snippets</section>
+
+  <ul>
+    {
+      snippets.map((snippet) => (
+        <>
+          <li>
+            <SnippetCard
+              title={snippet.frontmatter.title}
+              datetime={snippet.frontmatter.datetime}
+            />
+          </li>
+        </>
+      ))
+    }
+  </ul>
+</Layout>

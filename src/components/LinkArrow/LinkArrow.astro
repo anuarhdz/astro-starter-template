@@ -1,0 +1,22 @@
+---
+import ArrowIcon from '@assets/icons/arrow-small-right.svg';
+export interface Props extends astroHTML.JSX.AnchorHTMLAttributes {}
+const { href } = Astro.props;
+
+const styles = {
+  link: 'inline-flex items-center group relative after:absolute after:h-[1px] after:w-full after:bottom-0 after:-translate-x-full hover:after:translate-x-0 after:bg-black after:transition-transform',
+  icon: 'transition-transform inline-block group-hover:translate-x-1 translate-y-[1px]',
+};
+---
+
+<a href={href} class:list={[styles.link]}>
+  <slot />
+  <img
+    src={ArrowIcon}
+    alt=""
+    aria-hidden="true"
+    width="20"
+    height="20"
+    class:list={[styles.icon]}
+  />
+</a>

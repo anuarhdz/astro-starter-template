@@ -1,0 +1,30 @@
+---
+const YEAR = new Date().getFullYear();
+---
+
+<footer id="main-footer">
+  <hr />
+  <nav>
+    <ul role="list">
+      <li>
+        <a href="/">Homepage</a>
+      </li>
+      <li>
+        <a href={new URL('/sobre-mi', Astro.site)}>Sobre mí</a>
+      </li>
+      <li>
+        <a href={new URL('/newsletter', Astro.site)}>Newsletter</a>
+      </li>
+      <li>
+        <a href="http://github.com/anuarhdz" target="_blank">Github</a>
+      </li>
+      <li>
+        <a href={new URL('/snippets', Astro.site)}>Snippets</a>
+      </li>
+      <li>
+        <a href={new URL('/notas', Astro.site)}>Notas</a>
+      </li>
+    </ul>
+  </nav>
+  <p>Copyright © {YEAR} | All rights reserved.</p>
+</footer>

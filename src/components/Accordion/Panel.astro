@@ -1,0 +1,28 @@
+---
+export interface Props {
+  id: string;
+  controlId: string;
+}
+const { id, controlId } = Astro.props;
+---
+
+<div
+  id={id}
+  class="accordion-panel"
+  aria-labelledby={controlId}
+  role="region"
+  data-state="close"
+  slot="panel"
+>
+  <slot />
+</div>
+
+<style>
+  .accordion-panel {
+    display: none;
+  }
+
+  .accordion-panel[data-state='open'] {
+    display: block;
+  }
+</style>

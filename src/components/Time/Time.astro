@@ -1,0 +1,33 @@
+---
+import { getHumanDate, getISODate } from '@utils/dateUtils';
+
+export interface Props {
+  postDate: string;
+  isBlogpostUpdate: boolean;
+  updateDate?: string;
+}
+
+const { postDate, isBlogpostUpdate = false, updateDate } = Astro.props;
+---
+
+{
+  isBlogpostUpdate === true && updateDate !== '' ? (
+    <>
+      <span aria-hidden="true">📅 </span>
+      <span class="sr-only">fecha de publicación original: </span>
+      <time datetime={getISODate(postDate)}>{getHumanDate(postDate)}</time>
+
+      <span aria-hidden="true">📅 </span>
+      <span class="sr-only">fecha de actualización: </span>
+      <time datetime={getISODate(updateDate as string)}>
+        {getHumanDate(updateDate as string)}
+      </time>
+    </>
+  ) : (
+    <>
+      <span aria-hidden="true">📅 </span>
+      <span class="sr-only">post publicado el: </span>
+      <time datetime={getISODate(postDate)}>{getHumanDate(postDate)}</time>
+    </>
+  )
+}

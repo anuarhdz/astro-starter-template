@@ -1,0 +1,20 @@
+---
+import { Time } from '@components/Time';
+import { Tag } from '@components/Tag';
+import getSlug from '@utils/getSlug';
+export interface Props {
+  title: string;
+  datetime: string;
+}
+
+const { title, datetime } = Astro.props;
+---
+
+<h3 class="font-bold underline">
+  <a href={new URL(getSlug(title, 'snippets/'), Astro.site)}>
+    {title}
+  </a>
+</h3>
+<p>
+  📅: <Time postDate={datetime} />
+</p>

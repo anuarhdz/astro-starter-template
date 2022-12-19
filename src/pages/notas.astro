@@ -1,0 +1,25 @@
+---
+import { Layout } from '@layouts/Layout';
+import { Note } from '@components/Note';
+
+const notes = (await Astro.glob('../notes/**/*.{md,mdx}')).sort(
+  (a, b) =>
+    new Date(b.frontmatter.datetime).valueOf() -
+    new Date(a.frontmatter.datetime).valueOf()
+);
+const publishedNotes = notes.filter(({ frontmatter }) => !frontmatter.draft);
+---
+
+<Layout page="Notas">
+  <section>
+    <h1>Notas</h1>
+
+    {
+      publishedNotes.map((note) => (
+        <>
+          <Note post={note.frontmatter} Content={note.Content} />
+        </>
+      ))
+    }
+  </section>
+</Layout>

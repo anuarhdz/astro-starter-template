@@ -1,0 +1,50 @@
+---
+import { Time } from '@components/Time';
+import { Image } from '@astrojs/image/components';
+import { SITE } from '@config';
+
+export interface Props {
+  date: string;
+  defaultAuthor: boolean | string;
+  readTime: string;
+  avatar: string;
+  updateDateExist: boolean;
+  updateDate?: string;
+}
+
+const {
+  date,
+  updateDateExist = false,
+  updateDate,
+  defaultAuthor,
+  readTime,
+  avatar,
+} = Astro.props;
+
+const author = defaultAuthor ? SITE.author : defaultAuthor;
+---
+
+<div class="flex justify-between items-center">
+  <p class="flex items-center gap-1.5">
+    <Image
+      src={import(`../../assets/images/author/${avatar}.jpg`)}
+      alt={typeof author === 'string' ? author : ''}
+      width={25}
+      height={25}
+      class="rounded-full"
+    />
+    <span>{author}</span> / {
+      updateDateExist && updateDate !== '' ? (
+        <Time postDate={date} isBlogpostUpdate={true} updateDate={updateDate} />
+      ) : (
+        <Time postDate={date} isBlogpostUpdate={false} />
+      )
+    }
+  </p>
+
+  <p>
+    <span aria-hidden="true">⏰</span>
+    <span class="sr-only">tiempo de lectura:</span>
+    {readTime}
+  </p>
+</div>

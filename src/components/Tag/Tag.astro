@@ -1,0 +1,13 @@
+---
+import getSlug from '@utils/getSlug';
+export interface Props {
+  tag: string;
+}
+const { tag } = Astro.props;
+
+const sluggedTag = getSlug(tag);
+---
+
+<a class="underline" href={new URL(`tags/${sluggedTag}`, Astro.site)}>
+  #{sluggedTag}
+</a>

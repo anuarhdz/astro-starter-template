@@ -1,0 +1,60 @@
+---
+import { Layout } from '@layouts/Layout';
+import { Box } from '@components/Box';
+import { Card } from '@components/Card';
+import { LinkArrow } from '@components/LinkArrow';
+import { SubscribeForm } from '@components/SubscribeForm';
+
+const posts = (await Astro.glob('../posts/**/*.{md,mdx}')).sort(
+  (a, b) =>
+    new Date(b.frontmatter.datetime).valueOf() -
+    new Date(a.frontmatter.datetime).valueOf()
+);
+const publishedPosts = posts.filter(({ frontmatter }) => !frontmatter.draft);
+const featuredPosts = publishedPosts
+  .filter(({ frontmatter }) => frontmatter.featured)
+  .slice(0, 3);
+
+const AllOtherPosts = publishedPosts
+  .filter((post) => !featuredPosts.includes(post))
+  .slice(0, 5);
+---
+
+<Layout page="Inicio" pageType="home">
+  <section>main content</section>
+  <section aria-labelledby="section-posts-title">
+    <h2 id="section-posts-title">Publicaciones del blog</h2>
+
+    <ul role="list" aria-label="publicaciones destacadas">
+      {
+        featuredPosts.map(({ frontmatter }) => (
+          <>
+            <li>
+              <Box post={frontmatter} />
+            </li>
+          </>
+        ))
+      }
+    </ul>
+
+    <ul
+      role="list"
+      aria-label="todas las publicaciones del blog"
+      class="mt-20 lg:mt-40"
+    >
+      {
+        AllOtherPosts.map(({ frontmatter }) => (
+          <li>
+            <Card post={frontmatter} />
+          </li>
+        ))
+      }
+    </ul>
+
+    <LinkArrow href={new URL('blog', Astro.site)}>Ir al blog</LinkArrow>
+  </section>
+
+  <section>
+    <SubscribeForm />
+  </section>
+</Layout>

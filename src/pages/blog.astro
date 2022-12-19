@@ -1,0 +1,26 @@
+---
+import { Layout } from '@layouts/Layout';
+import { Card } from '@components/Card';
+
+const posts = (await Astro.glob('../posts/**/*.{md,mdx}')).sort(
+  (a, b) =>
+    new Date(b.frontmatter.datetime).valueOf() -
+    new Date(a.frontmatter.datetime).valueOf()
+);
+---
+
+<Layout page="Blog">
+  <section>
+    <h1>blog</h1>
+
+    <ul>
+      {
+        posts.map(({ frontmatter }) => (
+          <li>
+            <Card post={frontmatter} />
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</Layout>

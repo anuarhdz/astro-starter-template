@@ -1,0 +1,1 @@
+export { default as LayoutMarkdownPage } from './LayoutMarkdownPage.astro';
